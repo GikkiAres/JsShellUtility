@@ -1,0 +1,6 @@
+name: JsShellUtility
+version: 0.0.1
+build: 1
+type: Shell
+info: 
+  git: git@github.com:GikkiAres/JsShellUtility.git
