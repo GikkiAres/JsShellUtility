@@ -1,3 +1,9 @@
+scriptDirPath=`dirname ${BASH_SOURCE[0]}`
+
+
+# 如何根据相对路径导入文件.
+. $scriptDirPath/JsStringValidator-0.0.0.sh
+
 # 判断文件夹是否存在且非空
 function isDirNotEmpty() {
     dstPath=$1
@@ -16,7 +22,7 @@ function isDirNotEmpty() {
 # 下载压缩包,并解压重命名为指定path.
 # $1 压缩包下载地址
 # $2 zipPath,压缩包存放路径
-# $3 解压后的存放路径
+# $3 解压后最终得到的目录
 # $4 force,path已经存在,是否删除重新下载.
 #
 function downloadZipToPath() {
@@ -29,9 +35,21 @@ function downloadZipToPath() {
     # dstPath的上层dirPath
     containerPath=$(dirname ${dstPath})
     force=$4
+
+    # 验证url的合法性
+    isStringValidUrl $zipDownloadUrl
+
     originTitle=${dstPath##*/}
-    tilte=${zipDownloadUrl##*/}
-    tilte=${tilte%%.*}
+    name=${zipPath##*/}
+    zipExt=`echo $name | grep -oE '(\.[a-zA-Z]+)+$'`
+    echo "name: $name,zipExt: $zipExt"
+    #使用sed进行动态的替换
+    # 首先使用eval进行变量替换,然后执行替换后的脚本就可以了.
+    # title=`eval "echo $name | sed 's/$zipExt//g'"`
+    # title为最终库文件加压后的文件夹
+    eval "title=${name%$zipExt}"
+    echo "title: $title"
+    
     if [[ -e $dstPath ]]; then 
         if [[ $force == "y" ]]; then
             rm -rf $dstPath
